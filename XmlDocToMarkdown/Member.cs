@@ -69,17 +69,6 @@ namespace XmlDocToMarkdown
 
                         break;
 
-                    case "P": // Property
-                        var pMemberSplit = colonSplit[1].Split('.');
-                        var pMemberParent = pMemberSplit[pMemberSplit.Length - 2];
-                        var pMemberName = pMemberSplit.Last();
-
-                        Parent = pMemberParent;
-                        Name = pMemberName;
-
-                        MemberType = MemberType.Property;
-                        break;
-
                     case "E": // Event
                         var eMemberSplit = colonSplit[1].Split('.');
                         var eMemberParent = eMemberSplit[eMemberSplit.Length - 2];
@@ -101,6 +90,17 @@ namespace XmlDocToMarkdown
 
                         MemberType = MemberType.Field;
                         break;
+
+                    case "P": // Property
+                        var pMemberSplit = colonSplit[1].Split('.');
+                        var pMemberParent = pMemberSplit[pMemberSplit.Length - 2];
+                        var pMemberName = pMemberSplit.Last();
+
+                        Parent = pMemberParent;
+                        Name = pMemberName;
+
+                        MemberType = MemberType.Property;
+                        break;
                 }
             }
         }
@@ -115,7 +115,7 @@ namespace XmlDocToMarkdown
 
         [XmlElement("summary")]
         public string Summary { get; set; }
-
+        
         [XmlArrayItem("param", typeof(Param))]
         public Param[] Parameters { get; set; } = new Param[0];
 
@@ -164,7 +164,7 @@ namespace XmlDocToMarkdown
 
         private string LineTrimmedString(string toTrim)
         {
-            var lines = toTrim.Split('\n');
+            var lines = toTrim.Trim().Split('\n');
             var sb = new StringBuilder();
 
             foreach (var l in lines)
@@ -186,8 +186,14 @@ namespace XmlDocToMarkdown
                     sb.AppendLine($"## { Name }");
                     sb.AppendLine();
 
-                    sb.AppendLine(LineTrimmedString(Summary));
+                    sb.Append(LineTrimmedString(Summary));
                     sb.AppendLine();
+
+                    if (!string.IsNullOrEmpty(Example))
+                    {
+                        sb.Append(LineTrimmedString(Example));
+                        sb.AppendLine();
+                    }
 
                     if (TypeParameters.Count() > 0)
                     {
@@ -252,24 +258,21 @@ namespace XmlDocToMarkdown
                             sb.Append(member.ToMarkdown());
                         }
                     }
-
-                    if (!string.IsNullOrEmpty(Example))
-                    {
-                        sb.AppendLine($"### Example");
-                        sb.AppendLine();
-
-                        sb.Append(LineTrimmedString(Example));
-                        sb.AppendLine();
-                    }
                     break;
 
                 case MemberType.Constructor:
                 case MemberType.Method:
-                    sb.AppendLine($"#### `{ Name }`");
+                    sb.AppendLine($"### `{ Name }`");
                     sb.AppendLine();
 
-                    sb.AppendLine(LineTrimmedString(Summary));
+                    sb.Append(LineTrimmedString(Summary));
                     sb.AppendLine();
+
+                    if (!string.IsNullOrEmpty(Example))
+                    {
+                        sb.Append(LineTrimmedString(Example));
+                        sb.AppendLine();
+                    }
 
                     if (Parameters.Count() > 0)
                     {
@@ -282,7 +285,7 @@ namespace XmlDocToMarkdown
 
                     if (TypeParameters.Count() > 0)
                     {
-                        sb.AppendLine($"##### Type Parameters");
+                        sb.AppendLine($"#### Type Parameters");
                         sb.AppendLine();
 
                         sb.AppendLine(TypeParameters.ToMarkdownTable());
@@ -290,19 +293,10 @@ namespace XmlDocToMarkdown
 
                     if (!string.IsNullOrEmpty(Returns))
                     {
-                        sb.AppendLine($"##### Returns");
+                        sb.AppendLine($"#### Returns");
                         sb.AppendLine();
 
-                        sb.AppendLine(LineTrimmedString(Returns));
-                        sb.AppendLine();
-                    }
-
-                    if (!string.IsNullOrEmpty(Example))
-                    {
-                        sb.AppendLine($"##### Example");
-                        sb.AppendLine();
-
-                        sb.AppendLine(LineTrimmedString(Example));
+                        sb.Append(LineTrimmedString(Returns));
                         sb.AppendLine();
                     }
                     break;
@@ -310,18 +304,15 @@ namespace XmlDocToMarkdown
                 case MemberType.Event:
                 case MemberType.Field:
                 case MemberType.Property:
-                    sb.AppendLine($"#### `{ Name }`");
+                    sb.AppendLine($"### `{ Name }`");
                     sb.AppendLine();
 
-                    sb.AppendLine(LineTrimmedString(Summary));
+                    sb.Append(LineTrimmedString(Summary));
                     sb.AppendLine();
 
                     if (!string.IsNullOrEmpty(Example))
                     {
-                        sb.AppendLine($"##### Example");
-                        sb.AppendLine();
-
-                        sb.AppendLine(LineTrimmedString(Example));
+                        sb.Append(LineTrimmedString(Example));
                         sb.AppendLine();
                     }
                     break;

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Xml.Serialization;
 
 namespace XmlDocToMarkdown
 {
@@ -17,7 +19,25 @@ namespace XmlDocToMarkdown
                 paths = Console.ReadLine().Split(' ');
             }
 
-            Converter.Convert(paths[0], paths[1]);
+            if (File.Exists(paths[0]))
+            {
+                Doc doc;
+
+                using (var reader = new StreamReader(paths[0]))
+                {
+                    var serializer = new XmlSerializer(typeof(Doc));
+                    doc = (Doc)serializer.Deserialize(reader);
+                }
+
+                using (var writer = new StreamWriter(paths[1]))
+                {
+                    writer.Write(doc.ToMarkdown());
+                }
+            }
+            else
+            {
+                throw new ArgumentException("Source file does not exist: " + paths[0]);
+            }
         }
     }
 }

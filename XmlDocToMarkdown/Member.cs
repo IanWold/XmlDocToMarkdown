@@ -17,7 +17,7 @@ namespace XmlDocToMarkdown
             get => _xmlName;
             set
             {
-                _xmlName = value.Replace("`0", "").Replace("``0", "").Replace("`1", "").Replace("``1", "");
+                _xmlName = value.Replace("``0", "").Replace("`0", "").Replace("``1", "").Replace("`1", "");
                 var colonSplit = _xmlName.Split(':');
 
                 switch (colonSplit[0])

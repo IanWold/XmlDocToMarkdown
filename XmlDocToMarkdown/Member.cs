@@ -70,36 +70,25 @@ namespace XmlDocToMarkdown
                         break;
 
                     case "E": // Event
-                        var eMemberSplit = colonSplit[1].Split('.');
-                        var eMemberParent = eMemberSplit[eMemberSplit.Length - 2];
-                        var eMemberName = eMemberSplit.Last();
-
-                        Parent = eMemberParent;
-                        Name = eMemberName;
-
-                        MemberType = MemberType.Event;
-                        break;
-
                     case "F": // Field
-                        var fMemberSplit = colonSplit[1].Split('.');
-                        var fMemberParent = fMemberSplit[fMemberSplit.Length - 2];
-                        var fMemberName = fMemberSplit.Last();
+                    case "P": // Property
+                        var memberSplit = colonSplit[1].Split('.');
+                        var memberParent = memberSplit[memberSplit.Length - 2];
+                        var memberName = memberSplit.Last();
 
-                        Parent = fMemberParent;
-                        Name = fMemberName;
+                        Parent = memberParent;
+                        Name = memberName;
 
-                        MemberType = MemberType.Field;
+                        MemberType =
+                            colonSplit[0] == "E"
+                            ? MemberType.Event
+                            : colonSplit[0] == "F"
+                            ? MemberType.Field
+                            : MemberType.Property;
                         break;
 
-                    case "P": // Property
-                        var pMemberSplit = colonSplit[1].Split('.');
-                        var pMemberParent = pMemberSplit[pMemberSplit.Length - 2];
-                        var pMemberName = pMemberSplit.Last();
-
-                        Parent = pMemberParent;
-                        Name = pMemberName;
-
-                        MemberType = MemberType.Property;
+                    default:
+                        MemberType = MemberType.Unhandled;
                         break;
                 }
             }

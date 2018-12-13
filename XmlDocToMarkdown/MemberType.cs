@@ -9,5 +9,6 @@
         Interface,
         Method,
         Property,
+        Unhandled
     }
 }
